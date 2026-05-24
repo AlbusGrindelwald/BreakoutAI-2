@@ -1,0 +1,26 @@
+{
+  "business": "Bloom Aesthetics Clinic",
+  "hours": "Mon-Sat, 9 am-7 pm",
+  "services": [
+    {
+      "name": "Botox",
+      "price": "from \u00a3200"
+    },
+    {
+      "name": "Fillers",
+      "price": "from \u00a3250"
+    },
+    {
+      "name": "Consultations",
+      "price": "free"
+    }
+  ],
+  "booking": "Via WhatsApp or website.",
+  "cancellation": "24hr cancellation required.",
+  "escalate_if": [
+    "complaint",
+    "medical question",
+    "pricing negotiation",
+    "> 2 unanswered questions"
+  ]
+}
