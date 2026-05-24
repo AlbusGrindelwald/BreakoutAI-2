@@ -1,6 +1,6 @@
 # AI Customer Support Workflow
 
-Python CLI prototype for the Closira AI Engineering Intern assignment. It simulates an AI-powered customer support workflow for Bloom Aesthetics Clinic, using SOP-grounded answers, lead qualification, escalation detection, and structured conversation summaries.
+Python CLI prototype for the BreakoutAI AI Engineering Intern assignment. It simulates an AI-powered customer support workflow for Bloom Aesthetics Clinic, using SOP-grounded answers, lead qualification, escalation detection, and structured conversation summaries.
 
 The CLI uses OpenRouter through its OpenAI-compatible API. Without a configured OpenRouter key, it falls back to deterministic local logic so the demos and tests remain runnable.
 
