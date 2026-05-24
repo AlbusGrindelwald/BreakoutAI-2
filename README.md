@@ -77,9 +77,9 @@ Tests are API-free and focus on deterministic escalation behaviour.
 
 ## Video Walkthrough Checklist
 
-- Show `data/sop.json`.
-- Show `prompt_design.md` and explain SOP grounding.
-- Run `python -m src.main --demo in_sop`.
-- Run `python -m src.main --demo escalation`.
-- Show generated summary output.
-- Run `python -m pytest`.
+- Showing `data/sop.json`.
+- Showing `prompt_design.md` and explain SOP grounding.
+- Running `python -m src.main --demo in_sop`.
+- Runnin `python -m src.main --demo escalation`.
+- Showing generated summary output.
+- Running `python -m pytest`.
