@@ -18,7 +18,9 @@ DEFAULT_SOP_PATH = ROOT_DIR / "data" / "sop.json"
 @dataclass(frozen=True)
 class Settings:
     openrouter_api_key: str | None
+    use_openrouter_api: bool
     openrouter_model: str
+    openrouter_fallback_models: list[str]
     openrouter_base_url: str
     app_name: str | None
     site_url: str | None
@@ -32,9 +34,20 @@ class Settings:
 
 def load_settings() -> Settings:
     load_dotenv()
+    fallback_models = [
+        model.strip()
+        for model in os.getenv(
+            "OPENROUTER_FALLBACK_MODELS",
+            "meta-llama/llama-3.3-70b-instruct:free,qwen/qwen3-coder:free,openrouter/free",
+        ).split(",")
+        if model.strip()
+    ]
     return Settings(
         openrouter_api_key=os.getenv("OPENROUTER_API_KEY"),
-        openrouter_model=os.getenv("OPENROUTER_MODEL", "openrouter/free"),
+        use_openrouter_api=os.getenv("USE_OPENROUTER_API", "false").strip().lower()
+        in {"1", "true", "yes", "y"},
+        openrouter_model=os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free"),
+        openrouter_fallback_models=fallback_models,
         openrouter_base_url=os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
         app_name=os.getenv("OPENROUTER_APP_NAME"),
         site_url=os.getenv("OPENROUTER_SITE_URL"),

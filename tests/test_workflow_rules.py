@@ -79,12 +79,16 @@ def test_openrouter_failure_falls_back_to_local_answer():
 
 def test_openrouter_settings(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
-    monkeypatch.setenv("OPENROUTER_MODEL", "openrouter/free")
+    monkeypatch.setenv("USE_OPENROUTER_API", "true")
+    monkeypatch.setenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free")
+    monkeypatch.setenv("OPENROUTER_FALLBACK_MODELS", "meta-llama/llama-3.3-70b-instruct:free")
 
     settings = load_settings()
 
     assert settings.openrouter_api_key == "test-openrouter-key"
-    assert settings.openrouter_model == "openrouter/free"
+    assert settings.use_openrouter_api
+    assert settings.openrouter_model == "openai/gpt-oss-20b:free"
+    assert settings.openrouter_fallback_models == ["meta-llama/llama-3.3-70b-instruct:free"]
     assert settings.openrouter_base_url == "https://openrouter.ai/api/v1"
     assert settings.has_openrouter_key
 
@@ -93,3 +97,10 @@ def test_openrouter_confidence_parser_handles_strings():
     assert parse_confidence("0.87") == 0.87
     assert parse_confidence("0,87") == 0.87
     assert parse_confidence(",") == 0.5
+
+
+def test_handoff_answer_keeps_reason_out_of_customer_message():
+    workflow = SupportWorkflow(SOP)
+    response = workflow.answer_faq("I am frustrated and want to complain.")
+    assert "Reason:" not in response.answer
+    assert response.escalation_reason == "Customer expressed frustration or made a complaint."

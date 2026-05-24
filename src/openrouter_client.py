@@ -19,6 +19,7 @@ class OpenRouterWorkflowClient:
         self,
         api_key: str,
         model: str,
+        fallback_models: list[str] | None = None,
         base_url: str | None = None,
         app_name: str | None = None,
         site_url: str | None = None,
@@ -44,11 +45,27 @@ class OpenRouterWorkflowClient:
             http_client=build_http_client(),
         )
         self.model = model
+        self.fallback_models = fallback_models or []
 
     def decide(self, system_prompt: str, user_message: str) -> AgentResponse:
+        errors: list[str] = []
+        for model in [self.model, *self.fallback_models]:
+            try:
+                return self._decide_with_model(model, system_prompt, user_message)
+            except Exception as exc:
+                errors.append(f"{model}: {describe_exception(exc)}")
+
+        raise OpenRouterWorkflowError(" | ".join(errors))
+
+    def _decide_with_model(
+        self,
+        model: str,
+        system_prompt: str,
+        user_message: str,
+    ) -> AgentResponse:
         try:
             response = self.client.chat.completions.create(
-                model=self.model,
+                model=model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message},
@@ -60,7 +77,7 @@ class OpenRouterWorkflowClient:
             return parse_agent_response(json.loads(content))
         except Exception as exc:
             detail = describe_exception(exc)
-            raise OpenRouterWorkflowError(f"OpenRouter request failed: {detail}") from exc
+            raise OpenRouterWorkflowError(detail) from exc
 
 
 def build_http_client() -> httpx.Client:

@@ -18,18 +18,19 @@ DEMO_MESSAGES = {
 }
 
 
-def build_workflow() -> SupportWorkflow:
+def build_workflow(use_api: bool = False) -> SupportWorkflow:
     settings = load_settings()
     sop = load_sop(settings.sop_path)
     client = (
         OpenRouterWorkflowClient(
             api_key=settings.openrouter_api_key,
             model=settings.openrouter_model,
+            fallback_models=settings.openrouter_fallback_models,
             base_url=settings.openrouter_base_url,
             app_name=settings.app_name,
             site_url=settings.site_url,
         )
-        if settings.has_openrouter_key
+        if settings.has_openrouter_key and (use_api or settings.use_openrouter_api)
         else None
     )
     return SupportWorkflow(sop=sop, ai_client=client)
@@ -56,8 +57,8 @@ def print_summary(summary) -> None:
     print(f"- Recommended next action: {summary.recommended_next_action}")
 
 
-def run_demo(name: str) -> None:
-    workflow = build_workflow()
+def run_demo(name: str, use_api: bool = False) -> None:
+    workflow = build_workflow(use_api)
     for message in DEMO_MESSAGES[name]:
         print(f"Customer: {message}")
         response = workflow.answer_faq(message)
@@ -79,8 +80,8 @@ def run_demo(name: str) -> None:
     print_summary(workflow.summarize_conversation())
 
 
-def run_interactive() -> None:
-    workflow = build_workflow()
+def run_interactive(use_api: bool = False) -> None:
+    workflow = build_workflow(use_api)
     print("Bloom Aesthetics Clinic support workflow. Type 'summary' to finish.")
     while True:
         message = input("Customer: ").strip()
@@ -105,13 +106,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="AI customer support workflow demo")
     parser.add_argument("--demo", choices=sorted(DEMO_MESSAGES), help="Run a scripted demo")
     parser.add_argument("--interactive", action="store_true", help="Run an interactive session")
+    parser.add_argument("--use-api", action="store_true", help="Call OpenRouter instead of using fast local demo logic")
     args = parser.parse_args(argv)
 
     if args.demo:
-        run_demo(args.demo)
+        run_demo(args.demo, args.use_api)
         return 0
     if args.interactive:
-        run_interactive()
+        run_interactive(args.use_api)
         return 0
 
     parser.print_help()

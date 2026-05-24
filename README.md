@@ -19,7 +19,9 @@ Edit `.env` and set:
 
 ```text
 OPENROUTER_API_KEY=your_openrouter_key_here
-OPENROUTER_MODEL=openrouter/free
+USE_OPENROUTER_API=false
+OPENROUTER_MODEL=openai/gpt-oss-20b:free
+OPENROUTER_FALLBACK_MODELS=
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 OPENROUTER_SITE_URL=http://localhost
 OPENROUTER_APP_NAME=Bloom Aesthetics Support Workflow
@@ -33,6 +35,12 @@ python -m src.main --demo out_of_scope
 python -m src.main --demo escalation
 python -m src.main --demo qualification
 python -m src.main --interactive
+```
+
+The default demo mode is local and instant so assignment walkthroughs are reliable. To test the live OpenRouter API, add `--use-api`:
+
+```bash
+python -m src.main --demo in_sop --use-api
 ```
 
 ## Assignment Stage Mapping

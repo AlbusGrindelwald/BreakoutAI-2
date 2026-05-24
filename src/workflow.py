@@ -120,7 +120,7 @@ class SupportWorkflow:
             try:
                 return self.ai_client.decide(build_system_prompt(self.sop_context), customer_message)
             except OpenRouterWorkflowError as exc:
-                logger.warning("OpenRouter API unavailable; using local fallback. %s", exc)
+                logger.warning("OpenRouter API unavailable or rate-limited; using local fallback.")
         return self._local_answer(customer_message)
 
     def _local_answer(self, customer_message: str) -> AgentResponse:
@@ -200,7 +200,4 @@ class SupportWorkflow:
         )
 
     def _handoff_answer(self, reason: str | None) -> str:
-        return (
-            "Thanks for flagging that. I am going to hand this over to a human agent "
-            f"so they can help properly. Reason: {reason or 'escalation required'}"
-        )
+        return "Thanks for flagging that. I am going to hand this over to a human agent so they can help properly."
